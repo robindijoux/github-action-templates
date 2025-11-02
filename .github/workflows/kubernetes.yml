@@ -7,7 +7,7 @@ on:
       kubernetes_directory:
         type: string
         description: 'The directory containing Kubernetes manifests'
-        default: 'kubernetes'
+        default: 'kubernetes/'
       image:
         type: string
         description: 'The container image to deploy'
