@@ -7,7 +7,6 @@ on:
       kubernetes_directory:
         type: string
         description: 'The directory containing Kubernetes manifests'
-        required: true
         default: 'kubernetes'
       image:
         type: string
