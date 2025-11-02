@@ -3,10 +3,34 @@ on:
     secrets:
       kubeconfig:
         required: true
+    inputs:
+      kubernetes_directory:
+        type: string
+        description: 'The directory containing Kubernetes manifests'
+        required: true
+        default: 'kubernetes'
+      image:
+        type: string
+        description: 'The container image to deploy'
+        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      KUBECONFIG: ${{ secrets.kubeconfig }}
     steps:
-      - name: Hello World
-        run: echo "Hello, ${{ secrets.kubeconfig }}!"
+        - uses: azure/setup-kubectl@v4
+          with:
+            version: 'latest'
+          id: install
+        - uses: azure/k8s-set-context@v1
+          with:
+            method: kubeconfig
+            kubeconfig: ${{ secrets.kubeconfig }}
+          id: setcontext
+        - uses: Azure/k8s-deploy@v3.1
+          with:
+            namespace: "default"
+            manifests: ${{ inputs.kubernetes_directory }}
+            images: ${{ inputs.image }}
