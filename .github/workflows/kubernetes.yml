@@ -17,8 +17,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      KUBECONFIG: ${{ secrets.kubeconfig }}
     steps:
         - uses: azure/setup-kubectl@v4
           with:
