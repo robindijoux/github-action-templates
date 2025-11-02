@@ -1,8 +1,5 @@
 on:
   workflow_call:
-    secrets:
-      kubeconfig:
-        required: true
     inputs:
       kubernetes_directory:
         type: string
