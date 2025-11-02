@@ -12,11 +12,14 @@ on:
         type: string
         description: 'The container image to deploy'
         required: true
+      kubeconfig:
+        type: string
+        description: 'Kubeconfig file content'
+        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: prod
     steps:
         - uses: azure/setup-kubectl@v4
           with:
@@ -25,7 +28,7 @@ jobs:
         - uses: azure/k8s-set-context@v1
           with:
             method: kubeconfig
-            kubeconfig: ${{ secrets.kubeconfig }}
+            kubeconfig: ${{ inputs.kubeconfig }}
           id: setcontext
         - uses: Azure/k8s-deploy@v3.1
           with:
