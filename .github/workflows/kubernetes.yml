@@ -1,0 +1,12 @@
+on:
+  workflow_call:
+    secrets:
+      kubeconfig:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello World
+        run: echo "Hello, ${{ secrets.kubeconfig }}!"
