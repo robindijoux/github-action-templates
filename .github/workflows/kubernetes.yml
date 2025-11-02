@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      kubeconfig:
+        required: true
     inputs:
       kubernetes_directory:
         type: string
@@ -8,10 +11,6 @@ on:
       image:
         type: string
         description: 'The container image to deploy'
-        required: true
-      kubeconfig:
-        type: string
-        description: 'Kubeconfig file content'
         required: true
 
 jobs:
