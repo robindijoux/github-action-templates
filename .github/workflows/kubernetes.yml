@@ -8,15 +8,20 @@ on:
         type: string
         description: 'The name of the application to deploy'
         required: true
-      helm_chart_path:
+      helm_chart_dir:
         type: string
-        description: 'The Helm chart to use for deployment'
+        description: 'Path to the directory containing the Helm chart'
         required: true
       kubernetes_namespace:
         type: string
         description: 'The Kubernetes namespace to deploy to'
         required: false
         default: 'default'
+      values_file:
+        type: string
+        description: 'The values file for Helm deployment'
+        required: false
+        default: 'values.yaml'
 
 jobs:
   deploy:
@@ -37,5 +42,5 @@ jobs:
             version: 'latest'
         - name: Helm deployment
           run: |
-            echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart }}"
-            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s
+            echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
+            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s -f ${{ inputs.values_file }}
