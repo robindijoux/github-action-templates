@@ -58,9 +58,22 @@ jobs:
         - name: Helm deployment
           run: |
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
-            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
+            helm upgrade --install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
               --namespace ${{ inputs.kubernetes_namespace }} \
               --wait \
               --timeout 5m0s \
               -f /tmp/values-resolved.yaml \
               --kubeconfig ./kubeconfig
+              
+        - name: Wait before cleanup
+          if: always()
+          run: sleep 600  # 10 minutes
+              
+        - name: Cleanup Helm release
+          if: always()
+          run: |
+            echo "Cleaning up Helm release after 10 minutes..."
+            helm uninstall ${{ inputs.application_name }} \
+              --namespace ${{ inputs.kubernetes_namespace }} \
+              --kubeconfig ./kubeconfig || true
+        
