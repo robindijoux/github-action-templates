@@ -12,22 +12,29 @@ on:
         type: string
         description: 'The container image to deploy'
         required: true
+      helm_chart:
+        type: string
+        description: 'The Helm chart to use for deployment'
+        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-        - uses: azure/setup-kubectl@v4
+        - uses: azure/setup-kubectl@v4.0.1
           with:
             version: 'latest'
           id: install
-        - uses: azure/k8s-set-context@v1
+        - uses: azure/k8s-set-context@v4.0.1
           with:
             method: kubeconfig
             kubeconfig: ${{ secrets.kubeconfig }}
           id: setcontext
-        - uses: Azure/k8s-deploy@v3.1
+        - name: Setup Helm
+          uses: azure/setup-helm@v4.3.1
           with:
-            namespace: "default"
-            manifests: ${{ inputs.kubernetes_directory }}
-            images: ${{ inputs.image }}
+            version: 'latest'
+        - name: Helm deployment
+          run: |
+            echo "Deploying image ${{ inputs.image }} using manifests in directory ${{ inputs.kubernetes_directory }}"
+            helm install ${{ inputs.helm_chart }}
