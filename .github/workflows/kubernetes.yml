@@ -11,7 +11,8 @@ on:
       helm_chart_dir:
         type: string
         description: 'Path to the directory containing the Helm chart'
-        required: true
+        required: false
+        default: './helm'
       kubernetes_namespace:
         type: string
         description: 'The Kubernetes namespace to deploy to'
