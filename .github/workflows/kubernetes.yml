@@ -42,25 +42,22 @@ jobs:
           with:
             version: 'latest'
             
-        - name: Create kubeconfig file
+        - name: Deploy with Helm
           run: |
+            # Create kubeconfig file
             echo "${{ secrets.kubeconfig }}" > kubeconfig
             
-        - name: Substitute variables in values file
-          run: |
+            # Substitute variables in values file and deploy
             if [ -f "${{ inputs.values_file }}" ]; then
-              envsubst < ${{ inputs.values_file }} > /tmp/values-resolved.yaml
+              envsubst < ${{ inputs.values_file }} > values-resolved.yaml
+              echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
+              helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
+                --namespace ${{ inputs.kubernetes_namespace }} \
+                --wait \
+                --timeout 5m0s \
+                -f values-resolved.yaml \
+                --kubeconfig ./kubeconfig
             else
               echo "Error: Values file ${{ inputs.values_file }} not found"
               exit 1
             fi
-            
-        - name: Helm deployment
-          run: |
-            echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
-            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
-              --namespace ${{ inputs.kubernetes_namespace }} \
-              --wait \
-              --timeout 5m0s \
-              -f /tmp/values-resolved.yaml \
-              --kubeconfig ./kubeconfig
