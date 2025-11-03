@@ -74,8 +74,6 @@ jobs:
               
         - name: Helm deployment
           run: |
-            echo "values-resolved.yaml content:"
-            cat /tmp/values-resolved.yaml
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
             helm upgrade --install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
               --namespace ${{ inputs.kubernetes_namespace }} \
