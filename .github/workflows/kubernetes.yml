@@ -34,18 +34,33 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.github_environment }}
     steps:
+        - name: Checkout code
+          uses: actions/checkout@v5
+          
         - name: Setup Helm
-          uses: azure/setup-helm@v4.3.1
+          uses: azure/setup-helm@v4
           with:
             version: 'latest'
+            
         - name: Create kubeconfig file
           run: |
             echo "${{ secrets.kubeconfig }}" > kubeconfig
+            
         - name: Substitute variables in values file
           run: |
-            envsubst < ${{ inputs.values_file }} > temp_values.yaml
-            mv temp_values.yaml ${{ inputs.values_file }}
+            if [ -f "${{ inputs.values_file }}" ]; then
+              envsubst < ${{ inputs.values_file }} > /tmp/values-resolved.yaml
+            else
+              echo "Error: Values file ${{ inputs.values_file }} not found"
+              exit 1
+            fi
+            
         - name: Helm deployment
           run: |
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
-            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s -f ${{ inputs.values_file }} --kubeconfig ./kubeconfig
+            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} \
+              --namespace ${{ inputs.kubernetes_namespace }} \
+              --wait \
+              --timeout 5m0s \
+              -f /tmp/values-resolved.yaml \
+              --kubeconfig ./kubeconfig
