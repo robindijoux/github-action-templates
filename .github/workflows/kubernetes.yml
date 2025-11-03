@@ -29,8 +29,25 @@ on:
         required: false
         default: 'values.yaml'
 
-jobs:
+jobs:  
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v5
+          
+        - name: Setup Helm
+          uses: azure/setup-helm@v4
+          with:
+            version: 'latest'
+            
+        - name: Helm lint
+          run: |
+            echo "Linting Helm chart at ${{ inputs.helm_chart_dir }}"
+            helm lint ${{ inputs.helm_chart_dir }}
+
   deploy:
+    needs: lint
     runs-on: ubuntu-latest
     environment: ${{ inputs.github_environment }}
     steps:
