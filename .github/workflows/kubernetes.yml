@@ -27,19 +27,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-        - uses: azure/setup-kubectl@v4.0.1
-          with:
-            version: 'latest'
-          id: install
-        - uses: azure/k8s-set-context@v4.0.1
-          with:
-            method: kubeconfig
-            kubeconfig: ${{ secrets.kubeconfig }}
-          id: setcontext
         - name: Setup Helm
           uses: azure/setup-helm@v4.3.1
           with:
             version: 'latest'
+        - name: Create kubeconfig file
+          run: |
+            echo "${{ secrets.kubeconfig }}" > $HOME/.kube/config
         - name: Helm deployment
           run: |
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
