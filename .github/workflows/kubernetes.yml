@@ -54,7 +54,7 @@ jobs:
               echo "Error: Values file ${{ inputs.values_file }} not found"
               exit 1
             fi
-            
+              
         - name: Helm deployment
           run: |
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
@@ -63,7 +63,9 @@ jobs:
               --wait \
               --timeout 5m0s \
               -f /tmp/values-resolved.yaml \
-              --kubeconfig ./kubeconfig
+              --kubeconfig ./kubeconfig \
+              --force \
+              --cleanup-on-fail
               
         - name: Wait before cleanup
           if: always()
