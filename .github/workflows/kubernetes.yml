@@ -4,18 +4,19 @@ on:
       kubeconfig:
         required: true
     inputs:
-      kubernetes_directory:
+      application_name:
         type: string
-        description: 'The directory containing Kubernetes manifests'
-        default: 'kubernetes/'
-      image:
-        type: string
-        description: 'The container image to deploy'
+        description: 'The name of the application to deploy'
         required: true
-      helm_chart:
+      helm_chart_path:
         type: string
         description: 'The Helm chart to use for deployment'
         required: true
+      kubernetes_namespace:
+        type: string
+        description: 'The Kubernetes namespace to deploy to'
+        required: false
+        default: 'default'
 
 jobs:
   deploy:
@@ -36,5 +37,5 @@ jobs:
             version: 'latest'
         - name: Helm deployment
           run: |
-            echo "Deploying image ${{ inputs.image }} using manifests in directory ${{ inputs.kubernetes_directory }}"
-            helm install ${{ inputs.helm_chart }}
+            echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart }}"
+            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s
