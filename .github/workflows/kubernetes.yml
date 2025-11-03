@@ -40,7 +40,7 @@ jobs:
             version: 'latest'
         - name: Create kubeconfig file
           run: |
-            echo "${{ secrets.kubeconfig }}" > $HOME/.kube/config
+            echo "${{ secrets.kubeconfig }}" > kubeconfig
         - name: Substitute variables in values file
           run: |
             envsubst < ${{ inputs.values_file }} > temp_values.yaml
@@ -48,4 +48,4 @@ jobs:
         - name: Helm deployment
           run: |
             echo "Deploying ${{ inputs.application_name }} to namespace ${{ inputs.kubernetes_namespace }} using chart ${{ inputs.helm_chart_dir }}"
-            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s -f ${{ inputs.values_file }}
+            helm install ${{ inputs.application_name }} ${{ inputs.helm_chart_dir }} --namespace ${{ inputs.kubernetes_namespace }} --wait --timeout 5m0s -f ${{ inputs.values_file }} --kubeconfig ./kubeconfig
