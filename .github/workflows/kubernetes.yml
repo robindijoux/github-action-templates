@@ -69,7 +69,7 @@ jobs:
               
         - name: Wait before cleanup
           if: success()
-          run: sleep 600  # 10 minutes
+          run: sleep 60  # 10 minutes
               
         - name: Cleanup Helm release
           if: success()
